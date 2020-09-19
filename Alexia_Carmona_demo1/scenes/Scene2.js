@@ -142,7 +142,7 @@ class Scene2 extends Phaser.Scene{
     this.ghost = this.physics.add.group({
       key: "ghost",
       repeat: 1,
-      setXY:{x: 280, y: 200, stepX: 100}
+      setXY:{x: 220, y: 200, stepX: 100}
     });
     this.ghost.children.iterate(function (child){
       child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
