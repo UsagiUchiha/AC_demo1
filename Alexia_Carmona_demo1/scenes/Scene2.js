@@ -63,7 +63,7 @@ class Scene2 extends Phaser.Scene{
   platformBuilder(){
     this.platforms= this.physics.add.staticGroup();
     this.platforms.create(400, 568, "path").setScale(3).refreshBody();
-    this.platforms.create(150, 300, "platform");
+    this.platforms.create(155, 300, "platform");
     this.platforms.create(100, 320, "platform");
   }
 
@@ -72,7 +72,7 @@ class Scene2 extends Phaser.Scene{
     this.dragonPlayer = this.physics.add.sprite(100, 150, "dragon");
     this.dragonPlayer.body.setSize(100, 170, 200, 325);
 
-    this.dragonPlayer.setBounce(0.1);
+    this.dragonPlayer.setBounce(0.2);
 
     //Edge colliders
     this.playerCollider = this.dragonPlayer.setCollideWorldBounds(true);
