@@ -6,11 +6,10 @@ var healthTitle ="health: "+ health + " out of 5";
 class Scene1 extends Phaser.Scene{
   constructor(){  // Where can intialize variables
     super("playGame");
+    this.gameOver = false;
   }
 
-
   preload(){
-    this.time.addEvent({delay: 500, callback: this.delayDone, callbackScope: this, loop: false});
     this.load.image("background", "assets/background.png");
     this.load.image("floor", "assets/floor.png");
     this.load.image("ghost", "assets/ghost.png");
@@ -30,10 +29,11 @@ class Scene1 extends Phaser.Scene{
     {frameWidth: 230, frameHeight: 230});
     this.fly = this.load.spritesheet("fly", "assets/fly.png",
     {frameWidth: 106, frameHeight: 108});
+
   }
 
 //            ---Create---
-  create(){
+  create(game){
     this.background = this.add.image(-100,0, "background");
     this.background.setOrigin(0, 0);
     this.background.setScale(2.8);
@@ -41,49 +41,43 @@ class Scene1 extends Phaser.Scene{
     // calls platformBuilder Function
     this.platformBuilder();
     this.playerCreation();
+    this.createEnemy();
 
     this.buttonControls();
     this.gemCreator();
     this.portal();
+    this.createEnemy();
     this.trees = this.add.image(600, 490, "trees").setScale(2);
-    // this.ghost = this.add.image(config.width/2 - 50, config.height/2, "ghost");
-    // this.platform = this.add.image(config.width/2, config.height/2, "platform");
-    // this.add.text(20,20, "playing game", {font:"25px Arial", fill:"yellow"});
-    console.log("Rock and Roll");
-    scoreTitle = this.add.text(20, 20, "Score: 0", { fontsize: "200px", fill: "#000"});
-    healthTitle = this.add.text(20, 40, "Health: 5", { fontsize: "200px", fill: "#000"});
-  }
 
-  delayDone(){
-    // console.log('ok!')
-    // Fixes Collisions
-    this.dragonPlayer.body.setSize(this.dragonPlayer.width, this.dragonPlayer.height, true);
-    // this.dragonRight.body.setSize(this.dragonRight.width, this.Right.height, true);
-    // this.fly.body.setSize(this.fly.width, this.fly.height, true);
-   }
+    //Game over text
+    this.gameOverMsg = this.add.text(200, 290, "GAME OVER", { fontsize: "200px", setFontfamily: 'Grenze Gotisch', strokeThickness: 5, fill: "#900"});
+    this.gameOverMsg.setOrigin(-.5);
+    this.gameOverMsg.visible = false;
+
+    this.gameOverMsg2 = this.add.text(100, 290, "Refresh to start over.", { fontsize: "200px", setFontfamily: 'Grenze Gotisch', strokeThickness: 5, fill: "#900"});
+    this.gameOverMsg2.setOrigin(-.5, -1.5);
+    this.gameOverMsg2.visible = false;
+
+    scoreTitle = this.add.text(20, 20, "Score: 0", { fontsize: "200px", setFontfamily: 'Grenze Gotisch', strokeThickness: 4, fill: "#230"});
+    healthTitle = this.add.text(20, 40, "Health: 5", { fontsize: "200px", setFontfamily: 'Grenze Gotisch', strokeThickness: 4, fill: "#230"});
+  }
 
 // Function for creating platforms with static properties
   platformBuilder(){
     this.platforms= this.physics.add.staticGroup();
     this.platforms.create(400, 568, "floor").setScale(3).refreshBody();
-    // this.platforms.create(100, 500, "platform");
-    // this.platforms.create(200, 470, "platform");
+    this.platforms.create(100, 500, "platform");
     this.platforms.create(300, 420, "platform");
-    // this.platforms.create(200, 380, "platform");
-    // this.platforms.create(300, 350, "platform");
-    // this.platforms.create(420, 350, "platform");
-    // this.platforms.create(500, 450, "platform");
   }
 
   // Player Animation
   playerCreation(){
     this.dragonPlayer = this.physics.add.sprite(100, 150, "dragon");
-    this.dragonPlayer.body.height = 82;
-    this.dragonPlayer.body.width = 46;
+    this.dragonPlayer.body.setSize(100, 170, 200, 325);
+    this.dragonPlayer.setBounce(0.1);
 
-    this.dragonPlayer.setBounce(0.2);
     //Edge colliders
-    this.dragonPlayer.setCollideWorldBounds(true);
+    this.playerCollider = this.dragonPlayer.setCollideWorldBounds(true);
     this.physics.add.collider(this.dragonPlayer, this.platforms);
 
   this.anims.create({
@@ -120,11 +114,12 @@ class Scene1 extends Phaser.Scene{
     });
   }
 
+  // Creates gems
   gemCreator(){
     this.gem = this.physics.add.group({
       key: "gem",
       repeat: 3,
-      setXY:{x: 200, y: 10, stepX: 100}
+      setXY:{x: 100, y: 10, stepX: 110}
     });
       this.physics.add.collider(this.gem, this.platforms);
       this.physics.add.overlap(this.dragonPlayer, this.gem, this.collection, null, this);
@@ -146,6 +141,35 @@ class Scene1 extends Phaser.Scene{
     scoreTitle.setText('Score: ' + scoreCounter);
   }
 
+  createEnemy(){
+    this.ghost = this.physics.add.group({
+      key: "ghost",
+      repeat: 1,
+      setXY:{x: 400, y: 10, stepX: 100}
+    });
+
+    this.ghost.children.iterate(function (child){
+      child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.3));
+    })
+      // this.ghost.setBounce(2);
+      this.physics.add.collider(this.ghost, this.platforms);
+      this.physics.add.overlap(this.dragonPlayer, this.ghost, this.damage, null, this);
+  }
+
+  damage(player, ghost){
+    health -= 1;
+    healthTitle.setText('Health: ' + health + " out of 5");
+    if (health <= 0){
+      healthTitle.setText('Health: 0' + " out of 5");
+      this.gameOverMsg.visible = true;
+      this.gameOverMsg2.visible = true;
+      this.physics.pause();
+      player.setTint(0xff0000);
+      this.gameOver = true;
+    }
+
+  }
+
   nextLevel(player, portal){
   this.scene.launch("Final");
   this.scene.start("Final");
@@ -159,6 +183,7 @@ class Scene1 extends Phaser.Scene{
 
 //        ---Update---
   update(){
+
     if (this.arrows.left.isDown){
       this.dragonPlayer.setVelocityX(-160);
       this.dragonPlayer.anims.play("left", true);

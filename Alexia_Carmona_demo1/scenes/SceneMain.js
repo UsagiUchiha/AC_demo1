@@ -12,7 +12,7 @@ class SceneMain extends Phaser.Scene{
     this.title.setScale(2.8);
 
     this.add.text(200, 290, "Welcome to A Dragon's Life!",{ fontsize: "200px"});
-    this.add.text(160, 350, "Click anywhere in the game to start.",{ fontsize: "40px"});
+    this.add.text(160, 350, "Click anywhere on the game screen to start.",{ fontsize: "40px"});
     this.input.on("pointerdown", () => this.scene.start("playGame"));
     // this.scene.start("playGame");
   }

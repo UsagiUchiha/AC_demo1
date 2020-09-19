@@ -1,0 +1,10 @@
+h1{
+  align-content: center;
+  color: rgb(239, 135, 0);
+  font-family: font-family: 'Grenze Gotisch', cursive;
+  position: static;
+}
+
+#phaser-game{
+  align-content: center;
+}

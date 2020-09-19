@@ -5,8 +5,8 @@ var config ={
   physics:{
     default: "arcade",
     arcade: {
-      gravity: {y:200},
-      debug: true
+      gravity: {y:250},
+      debug: false,
     }
   },
   backgroundColor: 0X000000,
