@@ -6,7 +6,6 @@ class SceneMain extends Phaser.Scene{
   this.load.image("titleScreen", "assets/titleScreen.png");
 }
   create(){
-    console.log('GO')
     this.title = this.add.image(-100,0, "titleScreen");
     this.title.setOrigin(0, 0);
     this.title.setScale(2.8);
